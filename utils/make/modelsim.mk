@@ -33,7 +33,7 @@ VSIM = vsim $(VSIMOPT)
 ### Xilinx Simulation libs targets ###
 $(ESP_ROOT)/.cache/modelsim/xilinx_lib:
 	$(QUIET_MKDIR)mkdir -p $@
-	@echo "compile_simlib -directory xilinx_lib -simulator questa -library all" > $@/simlib.tcl; \
+	@echo "compile_simlib -directory xilinx_lib -simulator modelsim -library all" > $@/simlib.tcl; \
 	cd $(ESP_ROOT)/.cache/modelsim; \
 	if ! vivado $(VIVADO_BATCH_OPT) -source xilinx_lib/simlib.tcl; then \
 		echo "$(SPACES)ERROR: Xilinx library compilation failed!"; rm -rf xilinx_lib modelsim.ini; exit 1; \
