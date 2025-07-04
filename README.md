@@ -2,7 +2,7 @@
 
 ![Open-ESP](esp-logo-small.png)
 
-This repository is the open-source release for the paper:
+This repository is a minimal example for the paper:
 
 > *A Framework for Secure Third-Party IP Integration in NoC-based SoC Platforms*
 
@@ -22,7 +22,6 @@ Using other versions of Questa / Vivado might require modifying the Makefiles.
 ## Steps
 Please follow 
 
-### Configure EDA tools and start the docker
 ### 1. Configure EDA Tools and Start the Docker
 
 Edit `./scripts/esp_env_cad.sh` to specify the paths to Vivado, Stratus HLS, and ModelSim/Questa.
@@ -37,7 +36,7 @@ Inside the Docker container, configure the EDA tool environment:
 source esp/scripts/esp_env_cad.sh
 ```
 
-### Generate HLS Accelerator and SoC
+### 2. Generate HLS Accelerator and SoC
 
 * Generate the dummy accelerator RTL and memory map, and place them in
 ```bash
@@ -58,7 +57,7 @@ In the GUI, design a minimal SoC with CPU, memory, I/O, and accelerator tiles. M
 
 Make sure to click on the "Generate SoC Config" before closing the window.
 
-### Enable/disable security features
+### 3. Enable/Disable Security Features
 In the SoC configuration GUI, enable or disable security features by checking or unchecking the "Enable security features" box.
 
 Also edit line 29 (SECURITY_ON) in:
@@ -67,7 +66,7 @@ accelerators/stratus_hls/dummy_stratus/sw/baremetal/dummy.c
 ```
 to match the security configuration. This ensures the firmware verifies the expected security behavior.
 
-### Run simulation
+### 4. Run Simulation
 Enter directory `socs/xilinx-vc707-xc7vx485t`, to run simulation with ModelSim GUI, 
 ```
 source dummy_stratus_sim.sh
