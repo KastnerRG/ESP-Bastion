@@ -2,9 +2,14 @@
 
 ![Open-ESP](esp-logo-small.png)
 
-This repo is the open-source release of the paper "A Framework for Secure Third-Party IP Integration in NoC-based SoC Platforms" based on the [ESP platform](https://www.esp.cs.columbia.edu). [Here](https://esp.cs.columbia.edu/docs/) is a list of ESP tutorials.
+This repository is the open-source release for the paper:
 
-This exmple is based on [this commit](https://github.com/sld-columbia/esp/tree/607b249f06fb257c50e6f4e2e9d8a447f92eb1ee) of the [ESP project](https://github.com/sld-columbia/esp). 
+> *A Framework for Secure Third-Party IP Integration in NoC-based SoC Platforms*
+
+It is built on top of the [ESP platform](https://www.esp.cs.columbia.edu). For ESP usage and background, see the [ESP documentation and tutorials](https://esp.cs.columbia.edu/docs/).
+
+This example is based on [this specific commit](https://github.com/sld-columbia/esp/tree/607b249f06fb257c50e6f4e2e9d8a447f92eb1ee) of the [ESP project](https://github.com/sld-columbia/esp). 
+
 
 ## Enviroment
 * Docker
@@ -18,40 +23,59 @@ Using other versions of Questa / Vivado might require modifying the Makefiles.
 Please follow 
 
 ### Configure EDA tools and start the docker
-`./scripts/esp_env_cad.sh` specifies the paths of EDA tools. Configure the paths to Vivado, Stratus HLS, and Modelsim/Questa.
+### 1. Configure EDA Tools and Start the Docker
 
-Download the docker image and launch the local volumns, including the EDA tools and this repo.
-```
+Edit `./scripts/esp_env_cad.sh` to specify the paths to Vivado, Stratus HLS, and ModelSim/Questa.
+
+Download the Docker image and launch it with local volumes, including the EDA tools and this repository:
+
+```bash
 docker run -it --security-opt label=type:container_runtime_t --network=host -e DISPLAY=$DISPLAY -v "$HOME/.Xauthority:/root/.Xauthority:rw" -v "/opt:/opt" -v "./ESP-Bastion:/home/espuser/esp" davidegiri/esp-tutorial:asplos2021 /bin/bash
 ```
-Upon docker startup, configure the path to EDA tools
-```
+Inside the Docker container, configure the EDA tool environment:
+```bash
 source esp/scripts/esp_env_cad.sh
 ```
 
 ### Generate HLS Accelerator and SoC
 
-Generate dummy accelerator RTL and memory map, put them under `tech/virtex7/acc` and `tech/virtex7/memgen`.
+* Generate the dummy accelerator RTL and memory map, and place them in
+```bash
+tech/virtex7/acc
+tech/virtex7/memgen
+```
 
-Enter directory `socs/xilinx-vc707-xc7vx485t`, use command `make esp-xconfig` to design a minimal SoC with CPU, memory, I/O and accelerator tiles. Ariane core and dummyStratus should be selected.
+* Enter directory 
+```bash
+socs/xilinx-vc707-xc7vx485t
+``` 
+* Launch the SoC configuration GUI
+```bash
+make esp-xconfig
+``` 
+In the GUI, design a minimal SoC with CPU, memory, I/O, and accelerator tiles. Make sure to select the Ariane core and Dummy Stratus accelerator.
 ![Diagram](readme_pics/configure.png)
 
 Make sure to click on the "Generate SoC Config" before closing the window.
 
 ### Enable/disable security features
-In the SoC configuration GUI, you can enable/disable security features by checking/unchecking the "Enable security features" box.
+In the SoC configuration GUI, enable or disable security features by checking or unchecking the "Enable security features" box.
 
-Also the check line 29 `SECURITY_ON` of file `accelerators/stratus_hls/dummy_stratus/sw/baremetal/dummy.c` to reflect the coresponding security configuraitons so that the firmawre can check with expetec output.
+Also edit line 29 (SECURITY_ON) in:
+```bash
+accelerators/stratus_hls/dummy_stratus/sw/baremetal/dummy.c
+```
+to match the security configuration. This ensures the firmware verifies the expected security behavior.
 
 ### Run simulation
 Enter directory `socs/xilinx-vc707-xc7vx485t`, to run simulation with ModelSim GUI, 
 ```
 source dummy_stratus_sim.sh
 ```
-Inside Modelsim, run
+Inside Modelsim, execute
 ```
 source path/to/scripts/sim_op.tcl
 ```
-This will run the RTL simulation, and display the waveforms of security-related signals.
+This will run the RTL simulation and display waveforms of security-related signals.
 ![Diagram](readme_pics/waveform.png)
 
