@@ -2,94 +2,56 @@
 
 ![Open-ESP](esp-logo-small.png)
 
-The [ESP website](https://www.esp.cs.columbia.edu) contains the most
-up-to-date information on the ESP project. The
-[Documentation](https://www.esp.cs.columbia.edu/docs) page contains
-detailed guides and video tutorials that will be released periodically
-to help users get the most out of ESP.
+This repo is the open-source release of the paper "A Framework for Secure Third-Party IP Integration in NoC-based SoC Platforms" based on the [ESP platform](https://www.esp.cs.columbia.edu). [Here](https://esp.cs.columbia.edu/docs/) is a list of ESP tutorials.
 
-ESP is an open-source platform for heterogeneous SoC design and
-prototype on FPGA. It provides a flexible tile-based architecture
-built on a multi-plane network-on-chip.
+This exmple is based on [this commit](https://github.com/sld-columbia/esp/tree/607b249f06fb257c50e6f4e2e9d8a447f92eb1ee) of the [ESP project](https://github.com/sld-columbia/esp). 
 
-In addition to the architecture, ESP provides users with templates and
-scripts to create new accelerators from SystemC, Chisel, and C/C++.
-The ESP design methodology eases the process of integrating processors
-and accelerators into an SoC by offering platform services, such as
-DMA, distributed interrupt, and run-time coherence selection, that
-hide the complexity of hardware and software integration from the
-accelerator designer.
+## Enviroment
+* Docker
+* Modelsim 2019.4 
+* Vivado 2019.2
+* Stratus HLS
 
-Currently, ESP supports the integration of multi-core
-[LEON3](https://www.gaisler.com/index.php/downloads/leongrlib)
-processor from GRLIB and single-core
-[Ariane](https://github.com/pulp-platform/ariane) processors from the
-Pulp Platform. LEON3 implements the SPARC V8 32-bits ISA, while Ariane
-implements the RISC-V 64-bits ISA.
+Using other versions of Questa / Vivado might require modifying the Makefiles.
 
-In addition to processor cores, ESP embeds accelerator design examples
-created with Stratus HLS in SystemC, Vivado HLS in C/C++ and Chisel.
+## Steps
+Please follow 
 
-Furthermore, ESP can serve as a platform to integrate third-party IP
-blocks.  For example, ESP integrates the NVIDIA Deep Learning
-Accelerator [NVDLA](http://nvdla.org/), which can be placed on any ESP
-accelerator tile.
+### Configure EDA tools and start the docker
+`./scripts/esp_env_cad.sh` specifies the paths of EDA tools. Configure the paths to Vivado, Stratus HLS, and Modelsim/Questa.
 
-## Publications
+Download the docker image and launch the local volumns, including the EDA tools and this repo.
+```
+docker run -it --security-opt label=type:container_runtime_t --network=host -e DISPLAY=$DISPLAY -v "$HOME/.Xauthority:/root/.Xauthority:rw" -v "/opt:/opt" -v "./ESP-Bastion:/home/espuser/esp" davidegiri/esp-tutorial:asplos2021 /bin/bash
+```
+Upon docker startup, configure the path to EDA tools
+```
+source esp/scripts/esp_env_cad.sh
+```
 
-Overview paper:
+### Generate HLS Accelerator and SoC
 
-> Paolo Mantovani, Davide Giri, Giuseppe Di Guglielmo, Luca
-> Piccolboni, Joseph Zuckerman, Emilio G. Cota, Michele Petracca,
-> Christian Pilato, Luca P. Carloni. _"Agile SoC Development with Open
-> ESP."_ IEEE/ACM International Conference On Computer Aided Design
-> (ICCAD), 2020.
+Generate dummy accelerator RTL and memory map, put them under `tech/virtex7/acc` and `tech/virtex7/memgen`.
 
-The [Publications](https://www.esp.cs.columbia.edu/pubs) page of the
-ESP website contains the complete list of publications related to ESP.
+Enter directory `socs/xilinx-vc707-xc7vx485t`, use command `make esp-xconfig` to design a minimal SoC with CPU, memory, I/O and accelerator tiles. Ariane core and dummyStratus should be selected.
+![Diagram](readme_pics/configure.png)
 
-## Repository organization
+Make sure to click on the "Generate SoC Config" before closing the window.
 
-Here is a brief description of the main directories in the repository,
-please refer to the READMEs inside each of them for more information.
+### Enable/disable security features
+In the SoC configuration GUI, you can enable/disable security features by checking/unchecking the "Enable security features" box.
 
-* `accelerators` contains multiple accelerator design and integration
-  flows, as well as many example accelerators.
+Also the check line 29 `SECURITY_ON` of file `accelerators/stratus_hls/dummy_stratus/sw/baremetal/dummy.c` to reflect the coresponding security configuraitons so that the firmawre can check with expetec output.
 
-* `constraints` contains the constraints and attributes for each
-  supported FPGA board (or ASIC technology).
+### Run simulation
+Enter directory `socs/xilinx-vc707-xc7vx485t`, to run simulation with ModelSim GUI, 
+```
+source dummy_stratus_sim.sh
+```
+Inside Modelsim, run
+```
+source path/to/scripts/sim_op.tcl
+```
+This will run the RTL simulation, and display the waveforms of security-related signals.
+![Diagram](readme_pics/waveform.png)
 
-* `socs` contains the working folders for launching all Make targets.
-  There is one working folder for each supported FPGA board (or ASIC
-  technology).
-
-* `rtl` contains the whole RTL code base, excluding the accelerators
-  RTL and the RTL generated in the working folder by the SoCGen and
-  SocketGen tools.
-
-* `soft` contains bootloader, Linux kernel and root file system, and
-  bare-metal library for each of the available processor cores. It
-  also contains bare-metal, user space and kernel space libraries for
-  invoking and managing accelerators.
-
-* `tech` is the destination of the RTL generated by the HLS-based and
-  Chisel-based accelerator design flows. It is also the destination of
-  the RTL generated with HLS for the SystemC implementation of the
-  cache hierarchy. The generated RTL is organized based on the target
-  FPGA (or ASIC) technology.
-
-* `tools` contains tools for design automation and for communicating
-  with an ESP SoC from a host machine.
-
-* `utils` contains various scripts and utilities, including the main
-  Makefiles, the RTL file lists, and the software toolchains
-  installation scripts.
-
-* `.cache` caches some compiled libraries so they only need to be
-  compiled once (e.g. Xilinx simulation libraries).
-
-## Stay tuned for the new features under development:
-
-   - Multi-core RISC-V [Ariane](https://github.com/openhwgroup/cva6)
-   - Accelerator design flow in C/C++ and SystemC with Catapult HLS
-   - Regression testing
