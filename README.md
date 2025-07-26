@@ -14,7 +14,7 @@ The example is based on [this commit](https://github.com/sld-columbia/esp/tree/6
 
 ## Tools
 * Docker
-* Modelsim 2019.4 
+* ModelSim 2019.4 
 * Vivado 2019.2
 * Stratus HLS
 
@@ -31,13 +31,13 @@ Using other versions of Questa / Vivado might require modifying the Makefiles.
 ```bash
 docker run -it --security-opt label=type:container_runtime_t --network=host -e DISPLAY=$DISPLAY -v "$HOME/.Xauthority:/root/.Xauthority:rw" -v "/opt:/opt" -v "./ESP-Bastion:/home/espuser/esp" davidegiri/esp-tutorial:asplos2021 /bin/bash
 ```
-* Inside the Docker container, configure the enviroment variables:
+* Inside the Docker container, configure the environment variables:
 ```bash
 source esp/scripts/esp_env_cad.sh
 ```
 
 ### 2. Generate HLS Accelerator
-* This example uses the dummy-stratus accelerator. Users are required to generate the RTL and memory map of the accelrator using Stratus HLS. The HLS source code is under `acceleratos/stratus_hls/dummy_stratus`. 
+* This example uses a dummy stratus accelerator. Users are required to generate the RTL and memory map of the accelerator using Stratus HLS. The HLS source code is under `accelerators/stratus_hls/dummy_stratus`. 
 * Check [here](https://esp.cs.columbia.edu/docs/systemc_acc/) for a tutorial on how to generate an accelerator using Cadence Stratus HLS.
 
 * Place the generated accelerator RTL and memory map under
@@ -60,12 +60,12 @@ make esp-xconfig
 
 * Click on the "Generate SoC Config" before closing the window.
 
-### 3. Enable/Disable Security Features
+### 4. Enable/Disable Security Features
 * Enable or disable security features by checking or unchecking the "Enable security features" box in the SoC configuration GUI (previous step).
 
 * Edit line 29 (SECURITY_ON) in `accelerators/stratus_hls/dummy_stratus/sw/baremetal/dummy.c` to match the security configuration. This ensures the firmware verifies the expected security behavior.
 
-### 4. Run Simulation
+### 5. Run Simulation
 * Enter directory `socs/xilinx-vc707-xc7vx485t`, to run simulation with ModelSim GUI, 
 ```bash
 source dummy_stratus_sim.sh
