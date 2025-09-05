@@ -10,11 +10,11 @@ This repository is a minimal example for the paper:
 
 This project is built on top of the [ESP platform](https://www.esp.cs.columbia.edu). For background and ESP general usage instructions, please refer to the [ESP documentation and tutorials](https://esp.cs.columbia.edu/docs/).
 
-The example is based on [this commit](https://github.com/sld-columbia/esp/tree/607b249f06fb257c50e6f4e2e9d8a447f92eb1ee) of the [ESP repository](https://github.com/sld-columbia/esp). The overall code structure is well documented in the [original ESP README](original_README.md). Bastion maintains the ESP hardware and software structure, with modifications to a few socket modules.
+The example is based on [this commit](https://github.com/sld-columbia/esp/tree/607b249f06fb257c50e6f4e2e9d8a447f92eb1ee) of the [ESP repository](https://github.com/sld-columbia/esp). The overall code structure is well documented in the [original ESP README](https://github.com/sld-columbia/esp/blob/607b249f06fb257c50e6f4e2e9d8a447f92eb1ee/README.md). Bastion maintains the ESP hardware and software structure, with modifications to a few socket modules.
 
-* `rtl/sockets/queues/acc_tile_queue.vhd` This file handles the accelerator tile’s interaction with the NoC. Bastion embeds security mechanisms here to detect and block unauthorized memory transactions initiated by third-party accelerators.
+* `rtl/sockets/queues/acc_tile_q.vhd` This file handles the accelerator tile’s interaction with the NoC. Bastion embeds security mechanisms here to detect and block unauthorized memory transactions initiated by third-party accelerators.
 
-* `rtl/sockets/queues/misc_tile_queue.vhd` This file handles the I/O tile’s interaction with the NoC. The I/O tile is treated as a trusted entity and is responsible for transmitting security configurations to other tiles.
+* `rtl/sockets/queues/misc_tile_q.vhd` This file handles the I/O tile’s interaction with the NoC. The I/O tile is treated as a trusted entity and is responsible for transmitting security configurations to other tiles.
 
 Instead of using a pure RTL testbench, users can simulate the full hardware and firmware stack to approximate a more realistic setup. The top-level firmware also serves the purpose of a testbench.
 
@@ -26,7 +26,7 @@ Instead of using a pure RTL testbench, users can simulate the full hardware and 
 * Vivado 2019.2
 * Stratus HLS 20.24
 
-Using other versions of Questa or Vivado may require modifying the Makefiles. 
+Using versions of Modelsim/Questa or Vivado different from those listed above may require changes to `utils/Makefile`, `utils/make/modelsim.mk` and `utils/make/questa.mk`. While other versions of Questa/Modelsim were used during development, this release has only been tested with the specific tool versions mentioned. Vivado is required to compile Xilinx simulation libraries (see line 34 at `utils/make/modelsim.mk`).
 
 ## Steps
 
@@ -44,6 +44,11 @@ git clone --recurse-submodules https://github.com/KastnerRG/ESP-Bastion.git
 ```bash
 docker run -it --security-opt label=type:container_runtime_t --network=host -e DISPLAY=$DISPLAY -v "$HOME/.Xauthority:/root/.Xauthority:rw" -v "/opt:/opt" -v "./ESP-Bastion:/home/espuser/esp" davidegiri/esp-tutorial:asplos2021 /bin/bash
 ```
+* Troubleshooting: If the GUI fails to display due to Docker/Python/xhost issues, run the following command before starting the Docker container:
+```bash
+xhost +local:docker
+```
+
 * Inside the Docker container, configure the environment variables
 ```bash
 source esp/scripts/esp_env_cad.sh
