@@ -122,3 +122,6 @@ source cmddummy_stratus_sim.sh
 run -a
 ```
 
+### Synthesis
+The synthesis workflow follows the standard ESP process; tutorials are available [here](https://esp.cs.columbia.edu/docs/systemc_acc/). Note that a Virtex-7 Vivado license is required.
+
