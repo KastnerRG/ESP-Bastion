@@ -51,7 +51,7 @@ xhost +local:docker
 
 * Inside the Docker container, configure the environment variables
 ```bash
-source esp/scripts/esp_env_cad.sh
+source esp/scripts/esp_env_cad_bastion.sh
 ```
 
 ### 2. Generate HLS Accelerator
