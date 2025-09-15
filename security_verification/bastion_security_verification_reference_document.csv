@@ -1,0 +1,134 @@
+SP ID,Related CWEs,SP Requirement,SP Specification Template,SP Type,Verification Level
+01,"1258, 1266, 1270, 1271, 1272, 1280",Accelerator (A) cannot receive data from Router (R) which originates while the sSocket is actively being reset.,"//# of Generic Signals to Replace = 3
+SP01_RECEIVE_GENERIC: assert iflow(
+ `signal_from_R`
+ when (`RESET` == 0)
+ =/=>
+ `signal_to_A`
+);",IFT,Security Socket
+02,"1258, 1266, 1270, 1271, 1272, 1280",Accelerator (A) cannot send data to Router (R) which originates while the sSocket is actively being reset.,"//# of Generic Signals to Replace = 3
+SP02_SEND_GENERIC: assert iflow(
+ `signal_from_A`
+ when (`RESET` == 0)
+ =/=>
+ `signal_to_R`
+);",IFT,Security Socket
+03,"1221, 1258, 1266, 1269, 1271, 1280",Accelerator (A) receives the default values while the sSocket is actively being reset.,"//# of Generic Signals to Replace = 3
+SP03_DEFAULT_GENERIC: assert iflow(
+ `signal_to_A` == `default_value`
+ unless (`RESET` != 0)
+);",Trace,Security Socket
+04,"1221, 1258, 1266, 1269, 1271, 1280",The sSocket outputs the default values to Router (R) while the sSocket is actively being reset.,"//# of Generic Signals to Replace = 3
+SP04_DEFAULT_GENERIC: assert iflow(
+ `signal_to_R` == `default_value`
+ unless (`RESET` != 0)
+);",Trace,Security Socket
+05,"1221, 1258, 1259, 1266, 1267, 1269, 1271, 1274, 1280, 1282",The configuration/registers are cleared and set to contain the default values while the sSocket is actively being reset.,"//# of Generic Signals to Replace = 4
+SP05_DEFAULT_GENERIC: assert iflow(
+ `reg` == `default_value`
+ unless (`RESET` != 0 && `sSocket_w/r_state` != 2’b00)
+);",Trace,Security Socket
+06,"1269, 1272, 1280",The TE can read from but not write to anomaly registers.,"//# of Generic Signals to Replace = 4
+SP06_RONLY_GENERIC: assert iflow(
+ `signal_from_TE`
+ when (`S_AXI_CTRL_AWADDR` == `reg_addr`) 
+ =/=>
+ `anomaly_reg`
+);",IFT,Communications
+07,"1258, 1270, 1272, 1280",Accelerator (A) cannot receive data from Router (R) which originates while the sSocket is in reset mode.,"//# of Generic Signals to Replace = 3
+SP07_RECEIVE_GENERIC: assert iflow(
+ `signal_from_R`
+ when (`sSocket_w/r_state` == 2’b00)
+ =/=>
+ `signal_to_A`
+);",IFT,Security Socket
+08,"1258, 1270, 1272, 1280",Accelerator (A) cannot send data to Router (R) which originates while the sSocket is in reset mode.,"//# of Generic Signals to Replace = 3
+SP08_SEND_GENERIC: assert iflow(
+ `signal_from_A`
+ when (`sSocket_w/r_state` == 2’b00)
+ =/=>
+ `signal_to_R`
+);",IFT,Security Socket
+09,"1221, 1258, 1269, 1272, 1280",Accelerator (A) receives the default values while the sSocket is in reset mode.,"//# of Generic Signals to Replace = 3
+SP09_DEFAULT_GENERIC: assert iflow(
+ `signal_to_A` == `default_value`
+ unless (`sSocket_w/r_state` != 2’b00)
+);",Trace,Security Socket
+10,"1221, 1258, 1269, 1272, 1280",The sSocket outputs the default values to Router (R) while the sSocket is in reset mode.,"//# of Generic Signals to Replace = 3
+SP10_DEFAULT_GENERIC: assert iflow(
+ `signal_to_R` == `default_value`
+ unless (`sSocket_w/r_state` != 2’b00)
+);",Trace,Security Socket
+11,"1221, 1258, 1259, 1267, 1269, 1271, 1272, 1274, 1280, 1282",The configuration/anomaly registers contain the default values until they are modified by the TE (config.) and/or sSocket (illegal req. metadata tracking).,"//# of Generic Signals to Replace = 6
+SP11_DEFAULT_GENERIC: assert iflow(
+ `unauthorized_signal`
+ when (`reg` == `default_value`) 
+ =/=>
+ `reg`
+ unless (`reg` == `default_value`)
+);",IFT,Communications
+12,"1270, 1272, 1280",Accelerator (A) cannot receive data associated with an illegal address from Router (R) which originates while the sSocket is in supervising mode.,"//# of Generic Signals to Replace = 4
+SP12_RECEIVE_GENERIC: assert iflow(
+ `signal_from_R`
+ when (`sSocket_w/r_state` == 2'b01) &&
+ (`AR/AW_ADDR_VALID_FLAG` == 0)
+ =/=>
+ `signal_to_A`
+);",IFT,Security Socket
+13,"1270, 1272, 1280",Accelerator (A) cannot send data associated with an illegal address to Router (R) which originates while the sSocket is in supervising mode.,"//# of Generic Signals to Replace = 4
+SP13_SEND_GENERIC: assert iflow(
+ `signal_from_A`
+ when (`sSocket_w/r_state` == 2'b01) &&
+ (`AR/AW_ADDR_VALID_FLAG` == 0)
+ =/=>
+ `signal_to_R`
+);",IFT,Security Socket
+14,"1270, 1272, 1280",Accelerator (A) cannot receive data from Router (R) which originates while the sSocket is in decouple mode.,"//# of Generic Signals to Replace = 3
+SP14_RECEIVE_GENERIC: assert iflow(
+ `signal_from_R`
+ when (`sSocket_w/r_state` == 2’b10)
+ =/=>
+ `signal_to_A`
+);",IFT,Security Socket
+15,"1270, 1272, 1280",Accelerator (A) cannot send data to Router (R) which originates while the sSocket is in decouple mode.,"//# of Generic Signals to Replace = 3
+SP15_SEND_GENERIC: assert iflow(
+ `signal_from_A`
+ when (`sSocket_w/r_state` == 2’b10)
+ =/=>
+ `signal_to_R`
+);",IFT,Security Socket
+16,"1221, 1269, 1272, 1280",Accelerator (A) receives the default values while the sSocket is in decouple mode.,"//# of Generic Signals to Replace = 3
+SP16_DEFAULT_GENERIC: assert iflow(
+ `signal_to_A` == `default_value`
+ unless (`sSocket_w/r_state` != 2’b10)
+);",Trace,Security Socket
+17,"1221, 1269, 1272, 1280",The sSocket outputs the default values to the Router (R) while the sSocket is in decouple mode.,"//# of Generic Signals to Replace = 3
+SP17_DEFAULT_GENERIC: assert iflow(
+ `signal_to_R` == `default_value`
+ unless (`sSocket_w/r_state` != 2’b10)
+);",Trace,Security Socket
+18,"1272, 1280, 1283",The anomaly registers are updated with illegal request metadata after the sSocket detects an illegal request.,"//# of Generic Signals to Replace = 3
+SP18_DEFAULT_GENERIC: assert iflow(
+ `authorized_signal`
+ when (`sSocket_w/r_state` == 2’b01)
+ =/=>
+ `anomaly_reg`
+ unless (`sSocket_w/r_state` == 2’b10)
+);",IFT,Security Socket
+19,"1221, 1272, 1280",An interrupt to TE is generated after the sSocket detects an illegal request.,"//# of Generic Signals to Replace = 2
+SP19_INTERRUPT_GENERIC: assert iflow(
+ `INTR_LINE_W/R` == 1
+ unless (`sSocket_w/r_state` != 2’b10)
+);",Trace,Communications
+20,"441, 1189, 1260",Any Accelerator (A) cannot receive data from any region not contained within its sSocket’s ACP.,"//# of Generic Signals to Replace = 2
+SP20_RECEIVE_GENERIC: assert iflow(
+`unauthorized`
+ =/=>
+`sig_to_A`
+);",IFT,System
+21,"441, 1189, 1260",Any Accelerator (A) cannot send data to any region not contained within its sSocket’s ACP.,"//# of Generic Signals to Replace = 2
+SP21_SEND_GENERIC: assert iflow(
+`sig_from_A`
+ =/=>
+`unauthorized`
+);",IFT,System
